@@ -1,0 +1,89 @@
+Assignment 2 - Starting with R
+==============================
+**1. Load the biofam data set that comes with the TraMineR library.**
+
+```{r data, message=FALSE}
+# Load the TraMineR library
+library(TraMineR)
+# Load the biofam data
+data(biofam)
+```
+
+**2. Print the variable names.**
+
+```{r varnames}
+# Print biofam data variable names
+names(biofam)
+```
+
+**3. Create an age variable by subtracting the birth year from the year of the survey and add it to the biofam data frame.**
+
+```{r agevar}
+# Create age variable & bind to biofam dataframe
+biofam<-cbind(biofam,2000-biofam$birthyr)
+names(biofam)<-c(names(biofam)[1:dim(biofam)[2]-1],"age")
+```
+
+**4. What is the minimum, maximum, median and mean age in the sample?**
+
+```{r agesum}
+# Age summary stats
+summary(biofam$age)
+```
+
+**5. What is the minimum, maximum, median and mean age of the women?**
+
+```{r femagesum}
+# Age summary stats for females
+summary(biofam[biofam$sex=="woman",]$age)
+# Age summary stats by sex
+#by(biofam$age,biofam$sex,summary)
+```
+
+**6. Add a cohort factor to the biofam data frame grouping the birth years into the following categories: 1900-1929, 1930-1939, 1940-1949, 1950-1959.**
+
+```{r cohort}
+# Add cohort variable to data frame
+biofam<-cbind(biofam,cut(biofam$birthyr,c(1900,1930,1940,1950,1959),labels=c("1900-29","1930-39","1940-49","1950-59"),right=F))
+names(biofam)<-c(names(biofam)[1:dim(biofam)[2]-1],"cohort")
+```
+
+
+**7. Generate an histogram of the distribution of birthyear using the above birth year classes. (Look at the help of the hist function for how to do that.)**
+
+```{r hist}
+# Histogram of birthyear using cohort bins
+hist(biofam$birthyr,breaks=(c(by(biofam$birthyr,biofam$cohort,min),max(biofam$birthyr))))
+#hist(biofam$birthyr,breaks=c(1900,1930,1940,1950,1959))
+```
+
+**8. Produce a frequency table of the cohort factor.**
+
+```{r freq}
+# Frequency table for cohort
+table(biofam$cohort)
+```
+
+**9. Cross tabulate the cohort with the state at 25 years old.**
+
+```{r crosstab}
+# Crosstab table for cohort by state @ 25
+table(biofam$cohort,biofam$a25)
+```
+
+**10. Fit a logistic regression for the probability to be married with a child and having left home at 25 years old in terms of the language of the questionnaire and the sex.**
+**Comment the results.**
+
+```{r logit}
+# Logistic regression for left/married/child @ 25
+summary(glm(a25==6~plingu02+sex,family=binomial,data=biofam))
+```
+* At 25 those who have left home, married, and had children are more likely women than men
+* At 25 Italians are less likely to have left home, married, and had children than the French
+
+**11. Fit the same logistic regression, but for the youngest cohort only.**
+
+```{r younglogit}
+# Logistic regression for left/married/child @ 25 in youngest cohort
+summary(glm(a25==6~plingu02+sex,family=binomial,data=biofam[biofam$cohort=="1950-59",]))
+```
