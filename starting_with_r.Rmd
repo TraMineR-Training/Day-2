@@ -77,9 +77,14 @@ table(biofam$cohort,biofam$a25)
 ```{r logit}
 # Logistic regression for left/married/child @ 25
 summary(glm(a25==6~plingu02+sex,family=binomial,data=biofam))
+# Calculate odds ratios (percentages) for significant effects in previous regression
+# Italians 61 per cent less likely than French
+100*(exp(glm(a25==6~plingu02+sex,family=binomial,data=biofam)$coeff)[4]-1)
+# Women 92 per cent more likely than men
+100*(exp(glm(a25==6~plingu02+sex,family=binomial,data=biofam)$coeff)[3]-1)
 ```
-* At 25 those who have left home, married, and had children are more likely women than men
-* At 25 Italians are less likely to have left home, married, and had children than the French
+* At 25 those who have left home, married, and had children are 92 per cent more likely women than men
+* At 25 Italians are 61 per cent less likely to have left home, married, and had children than the French
 
 **11. Fit the same logistic regression, but for the youngest cohort only.**
 
